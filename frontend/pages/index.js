@@ -1,9 +1,9 @@
-import Layout from '../components/MyLayout';
+import Link from 'next/link';
 
-const Index = () => (
-  <Layout>
-    <p>Hello Next.js</p>
-  </Layout>
+const Home = () => (
+  <div>
+    <p>Hey!</p>
+  </div>
 );
 
-export default Index;
+export default Home;
