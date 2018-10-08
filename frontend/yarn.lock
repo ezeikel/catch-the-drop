@@ -4248,7 +4248,7 @@ next-with-apollo@^3.1.3:
     prop-types "^15.6.2"
     react-apollo "^2.2.3"
 
-next@^7.0.0:
+next@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/next/-/next-7.0.1.tgz#58630126325dbeccf1926f32a8d9bd06ee43546c"
   dependencies:
