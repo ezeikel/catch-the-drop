@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { randomBytes } = require('crypto');
+const { promisify } = require('util');
 
 const Mutations = {
   async createItem(_, args, ctx, info) {
@@ -82,6 +84,40 @@ const Mutations = {
   signout(_, args, ctx, info) {
     ctx.response.clearCookie('token');
     return { message: 'Goodbye!' };
+  },
+  async requestReset(_, args, ctx, info) {
+    // 1. Check if this is a real user
+    const user = await ctx.db.query.user({ where: { email: args.email }});
+
+    if (!user) {
+      throw new Error(`No such user found for email ${args.email}`);
+    }
+
+    // 2. Set a reset token and expiry on that user
+    const randomBytesPromisified = promisify(randomBytes);
+    const resetToken = (await randomBytesPromisified(20)).toString('hex');
+    const resetTokenExpiry = Date.now() + 36000000; // 1 hour from now
+    const res = await ctx.db.mutation.updateUser({
+      where: { email: args.email },
+      data: { resetToken, resetTokenExpiry }
+    });
+    console.log(res);
+    return { message: 'Thanks!' };
+    // 3. Email them that reset token
+  },
+  async resetPassword(_, args, ctx, info) {
+    // 1. check if the passwords match
+    if (args.password !== args.confirmPassword) {
+      throw new Error('Passwords don\'t match');
+    }
+    // 2. check if its a legit reset token
+    // 3. check if its expired
+    // 4. hash their new password
+    // 5. save a new password to the user and remove old resetToken fields
+    // 6. generate jwt
+    // 7. set the jwt cookie
+    // 8. return the new user
+
   }
 };
 
