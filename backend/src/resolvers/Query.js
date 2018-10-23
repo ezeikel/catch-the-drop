@@ -12,6 +12,9 @@ const Query = {
     return ctx.db.query.user({
       where: { id: ctx.request.userId }
     }, info);
+  },
+  async users(_, args, ctx, info) {
+    // 1. check if the user has the permissions to
   }
 }
 
