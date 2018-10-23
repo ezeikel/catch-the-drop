@@ -6,7 +6,6 @@ const { transport, makeANiceEmail } = require('../mail');
 
 const Mutations = {
   async createItem(_, args, ctx, info) {
-    // TODO: Check if they are logged in
     if (!ctx.request.userId) {
       throw new Error('You must be logged in to do that!');
     }
