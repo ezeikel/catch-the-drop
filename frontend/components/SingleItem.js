@@ -11,7 +11,7 @@ const SingleItemStyles = styled.div`
   box-shadow: ${props => props.theme.bs};
   display: grid;
   grid-auto-columns: 1fr;
-  grid-auto-flow: column:
+  grid-auto-flow: column;
   min-height: 800px;
   img {
     width: 100%;
