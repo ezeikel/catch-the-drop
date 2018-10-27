@@ -211,7 +211,6 @@ const Mutations = {
     });
     // 3. check if that item is already in their cart and if it is increment by 1
     if (existingCartItem) {
-      console.log('This item is already in their cart');
       return ctx.db.mutation.updateCartItem({
         where: { id: existingCartItem.id },
         data: { quantity: existingCartItem.quantity + 1 }
@@ -261,7 +260,7 @@ const Mutations = {
           cart {
             id
             quantity
-            item { title price id description image }
+            item { title price id description image largeImage }
           }
         }
       `
@@ -276,10 +275,35 @@ const Mutations = {
       source: args.token
     });
     // 4. convert the CartItems to OrderItems
-    // 5. create the order
-    // 6. clean up - clear the users cart, delete cartItems
-    // 7. return the order to the client
+    const orderItems = user.cart.map(cartItem => {
+      const orderItem = {
+        ...cartItem.item,
+        quantity: cartItem.quantity,
+        user: { connect: { id: userId } }
+      };
+      delete orderItem.id;
+      return orderItem;
+    });
 
+    // 5. create the order
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems },
+        user: { connect: { id: userId } }
+
+      }
+    });
+    // 6. clean up - clear the users cart, delete cartItems
+    const cartItemIds = user.cart.map(cartItem => cartItem.id);
+    await ctx.db.mutation.deleteManyCartItems({
+      where: {
+        id_in: cartItemIds
+      }
+    });
+    // 7. return the order to the client
+    return order;
   }
 };
 
